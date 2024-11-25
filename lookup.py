@@ -10,19 +10,13 @@ class Lookup:
 
         self.word = word
 
-        self.free_dictionary_api_root = (
-            "https://api.dictionaryapi.dev/api/v2/entries/en"
-        )
+        self.free_dictionary_api_root = "https://api.dictionaryapi.dev/api/v2/entries/en"
 
-        self.free_dictionary_api_word_url = (
-            f"{self.free_dictionary_api_root}/{self.word}"
-        )
+        self.free_dictionary_api_word_url = f"{self.free_dictionary_api_root}/{self.word}"
 
     def get_word_data_from_free_dict(self, url):
 
-        headers = {
-            "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:129.0) Gecko/20100101 Firefox/129.0"
-        }
+        headers = {"User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:129.0) Gecko/20100101 Firefox/129.0"}
         request = Request(url, headers=headers)
 
         try:
@@ -47,9 +41,7 @@ class Lookup:
             part_of_speech = meaning["partOfSpeech"]
             num_definitions = len(meaning["definitions"])
 
-            print(
-                f"\n{self.word} has {num_definitions} definitions as a {part_of_speech}: "
-            )
+            print(f"\n{self.word} has {num_definitions} definitions as a {part_of_speech}: ")
 
             definitions = meaning["definitions"]
 
@@ -77,6 +69,17 @@ class Lookup:
 
         self.print_word_definitions_from_free_dict(definitions)
 
+    def print_synonyms_from_free_dictionary(self, response):
+
+        synonyms = []
+        for meaning in response[0]["meanings"]:
+            if "synonyms" in meaning:
+                synonyms.extend(meaning["synonyms"])
+
+        if synonyms != []:
+            synonyms = ",".join(synonyms)
+            print(f"synonyms: {synonyms}")
+
 
 def set_args():
     parser = argparse.ArgumentParser()
@@ -88,10 +91,17 @@ def set_args():
         help="When passed only first meaning is printed.",
     )
     parser.add_argument(
+        "-thesaurus",
+        "-syn",
+        "--synonyms",
+        action="store_true",
+        help="When passed synonyms are printed out too",
+    )
+    parser.add_argument(
         "-f",
         "--full",
         action="store_true",
-        help="When passed the full definition for every possible meaning is printed out.",
+        help="When passed the full definition for every possible meaning is printed out, with synonyms as well.",
     )
     parser.add_argument("-w", "--word", type=str, help="Pass the word to look up.")
     return parser
@@ -115,8 +125,12 @@ def main():
 
     if args.full:
         lookup.print_all_definitions_from_free_dict(response)
+        lookup.print_synonyms_from_free_dictionary(response)
     else:
         lookup.print_main_definition_from_free_dict(response)
+
+        if args.synonyms:
+            lookup.print_synonyms_from_free_dictionary(response)
 
 
 if __name__ == "__main__":
