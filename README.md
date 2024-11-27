@@ -113,6 +113,5 @@ Lookup uses the excellent [Free Dictionary API](https://dictionaryapi.dev/), whi
 Set up to work with other datasets:
 
 * Collins Dictionary API, which requires setting up an API Key- https://www.collinsdictionary.com/collins-api
-Wordnet
 
 * Wordnet - which can be used fully offline once dataset has been downloaded but likely would require more than standard library python to use - https://wordnet.princeton.edu/
